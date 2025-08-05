@@ -3,6 +3,15 @@
 # https://www.playframework.com/documentation/latest/ScalaRouting
 # ~~~~
 
+# FRONTEND
+
+
+#BACKEND
+
+POST    /reservations           controllers.ReservationController.createReservation
+GET     /reservations/:id       controllers.ReservationController.getReservation(id: Int)
+GET     /reservations           controllers.ReservationController.getAllReservations
+
 
 # An example controller showing a sample home page
 GET     /                           controllers.HomeController.index()

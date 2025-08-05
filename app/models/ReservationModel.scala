@@ -6,7 +6,7 @@ import java.sql.Timestamp
 case class Reservation (ReservationId: Int, username: String, LotId: Int, CheckIn: Timestamp, CheckOut:Timestamp)
 
 class ReservationModel(tag: Tag) extends Table[Reservation](tag, "reservations"){
-    def ReservationId = column[Int]("ReservationId", O.PrimaryKey)
+    def ReservationId = column[Int]("ReservationId", O.PrimaryKey, O.AutoInc)
     def username = column[String]("username")
     def LotId = column[Int]("LotId")
     def CheckIn = column[Timestamp]("CheckIn")
