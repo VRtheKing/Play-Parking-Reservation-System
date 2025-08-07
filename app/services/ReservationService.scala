@@ -2,9 +2,11 @@ package services
 
 import models.Reservation
 import Repo.{LotRepo, ReservationRepo}
+
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class ReservationService(reservationRepo: ReservationRepo,lotRepo: LotRepo)(implicit ec: ExecutionContext) {
+class ReservationService @Inject()(reservationRepo: ReservationRepo,lotRepo: LotRepo)(implicit ec: ExecutionContext) {
 
   def createReservation(reservation: Reservation): Future[Either[String, Int]] = {
     lotRepo.findByLot(reservation.LotId).flatMap {

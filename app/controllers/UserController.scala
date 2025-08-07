@@ -5,11 +5,16 @@ import play.api.mvc._
 import play.api.libs.json._
 import models.User
 import services.UserService
+
+import java.sql.Timestamp
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class UserController @Inject()(cc: ControllerComponents, userService: UserService)(implicit ec: ExecutionContext) extends AbstractController(cc){
-
+  implicit val timestampFormat: Format[Timestamp] = new Format[Timestamp] {
+    def reads(json: JsValue): JsResult[Timestamp] = json.validate[String].map(s => Timestamp.valueOf(s))
+    def writes(ts: Timestamp): JsValue = JsString(ts.toString)
+  }
   implicit val userFormat: OFormat[User] = Json.format[User]
   // POST -> Create User -> /users
 
@@ -27,10 +32,27 @@ class UserController @Inject()(cc: ControllerComponents, userService: UserServic
 
   // GET -> Fetch User -> /users
 
-  def getUser(username: String, password: String): Action[AnyContent] = Action.async { request =>
-    userService.validateUser(username, password).map {
-      case Some(user) => Ok(Json.toJson(user))
-      case None => Unauthorized(Json.obj("error" -> "Invalid username or password"))
+//  def getUser(username: String, password: String): Action[AnyContent] = Action.async { request =>
+//    userService.validateUser(username, password).map {
+//      case Some(user) => Ok(Json.toJson(user))
+//      case None => Unauthorized(Json.obj("error" -> "Invalid username or password"))
+//    }
+//  }
+
+  def getUser: Action[JsValue] = Action.async(parse.json) { request =>
+    val creds = for {
+      username <- (request.body \ "username").asOpt[String]
+      password <- (request.body \ "password").asOpt[String]
+    } yield (username, password)
+
+    creds match {
+      case Some((username, password)) =>
+        userService.validateUser(username, password).map {
+          case Some(user) => Ok(Json.toJson(user))
+          case None => Unauthorized(Json.obj("error" -> "Invalid credentials"))
+        }
+      case None =>
+        Future.successful(BadRequest(Json.obj("error" -> "Missing username or password")))
     }
   }
 }

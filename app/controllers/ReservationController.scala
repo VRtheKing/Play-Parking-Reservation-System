@@ -5,10 +5,16 @@ import play.api.mvc._
 import play.api.libs.json._
 import models.Reservation
 import services.ReservationService
+
+import java.sql.Timestamp
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class ReservationController @Inject()(cc: ControllerComponents,reservationService: ReservationService)(implicit ec: ExecutionContext) extends AbstractController(cc) {
+  implicit val timestampFormat: Format[Timestamp] = new Format[Timestamp] {
+    def reads(json: JsValue): JsResult[Timestamp] = json.validate[String].map(s => Timestamp.valueOf(s))
+    def writes(ts: Timestamp): JsValue = JsString(ts.toString)
+  }
 
   implicit val reservationFormat: OFormat[Reservation] = Json.format[Reservation]
 

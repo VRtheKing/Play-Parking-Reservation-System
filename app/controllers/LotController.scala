@@ -17,10 +17,17 @@ class LotController @Inject()(cc: ControllerComponents, lotService: LotService)(
       errors => Future.successful(BadRequest(Json.obj("error" -> "Invalid lot JSON"))),
       lotReserve => {
         lotService.createLot(lotReserve).map {
-          case Right(id) => Created(Json.obj("message" -> s"Lot created with ID $id"))
+          case Right(id) => Created(Json.obj("message" -> s"Lot created"))
           case Left(error) => BadRequest(Json.obj("error" -> error))
         }
       }
     )
+  }
+
+  // GET -> /lots
+  def getAllLots: Action[AnyContent] = Action.async{
+    lotService.getAllLot.map { lots =>
+      Ok(Json.toJson(lots))
+    }
   }
 }

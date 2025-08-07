@@ -2,9 +2,14 @@ package Repo
 
 import models.User
 import slick.jdbc.PostgresProfile.api._
+
+import javax.inject.Inject
+import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
+import slick.jdbc.JdbcProfile
 import scala.concurrent.{ExecutionContext, Future}
 
-class UserRepo(db: Database)(implicit ec: ExecutionContext) {
+class UserRepo @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)(implicit ec: ExecutionContext)
+  extends HasDatabaseConfigProvider[JdbcProfile] {
   val users = TableQuery[models.UserModel]
 
   def createUser(user: User): Future[Int] = {
