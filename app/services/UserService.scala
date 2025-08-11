@@ -2,6 +2,8 @@ package services
 
 import models.User
 import Repo.UserRepo
+
+import java.sql.Timestamp
 import scala.concurrent.{ExecutionContext, Future}
 import javax.inject.Inject
 
@@ -11,7 +13,8 @@ class UserService @Inject()(userRepo: UserRepo)(implicit ec: ExecutionContext) {
       case Some(_) =>
         Future.successful(Left("Username already exists"))
       case None =>
-        userRepo.createUser(user).map(_ => Right(user.username))
+        val userWithTimestamp = user.copy(createdAt = new Timestamp(System.currentTimeMillis()))
+        userRepo.createUser(userWithTimestamp).map(_ => Right(user.username))
     }
   }
 
