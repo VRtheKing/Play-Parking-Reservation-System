@@ -19,6 +19,9 @@ libraryDependencies ++= Seq(
 libraryDependencies += "org.postgresql" % "postgresql" % "42.7.7"
 libraryDependencies += "com.typesafe.play" %% "filters-helpers" % "2.8.22"
 
+libraryDependencies += "com.github.etaty" %% "rediscala" % "1.9.0"
+
+
 // Adds additional packages into Twirl
 //TwirlKeys.templateImports += "com.example.controllers._"
 
